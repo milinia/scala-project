@@ -57,19 +57,24 @@ object TextDao {
         text: PasteText,
         createdAt: TextDate,
         expirationTime: TextDate
-    ): doobie.ConnectionIO[Either[errors.InternalError, Text]] =
+    ): doobie.ConnectionIO[Either[errors.InternalError, Text]] = {
+      val uuid = UUID.randomUUID().toString
       sql
         .insertSql(
-          UUID.randomUUID().toString,
+          uuid,
           text,
           createdAt,
           expirationTime
         )
         .withUniqueGeneratedKeys[TextToken]("id")
-        .map(id => Text(id, text.content, createdAt, expirationTime))
+        .map(_ =>
+          Text(TextToken(uuid), text.content, createdAt, expirationTime)
+        )
         .attemptSomeSqlState { case _ =>
           errors.InternalError(new Throwable("Failed to create text"))
+
         }
+    }
   }
 
   def make: TextDao = new TextDaoImpl
