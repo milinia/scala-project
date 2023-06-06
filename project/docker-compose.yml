@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwerty007
+      POSTGRES_DB: text
+    ports:
+      - "5432:5432"
+    volumes:
+      - docker-entrypoint-initdb.d
+
+  todos:
+    image: docker.io/library/project:0.1.0-SNAPSHOT
+    environment:
+      DB_URL: postgresdb
+      DB_USER: postgres
+      DB_PASS: qwerty007
+      DB_NAME: text
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresdb
