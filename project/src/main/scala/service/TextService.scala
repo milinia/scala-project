@@ -2,25 +2,25 @@ package ru.itis
 package service
 
 import dao.TextDao
-import domain.domain.{IOWithRequestContext, TextDate, TextId}
+import domain.domain.{IOWithRequestContext, TextDate, TextToken}
 import domain.errors.{AppError, InternalError}
 import domain.{PasteText, RequestContext, Text, errors}
+import helpers.TimeConverter
 
 import cats.implicits.catsSyntaxApplicativeError
 import cats.syntax.either._
 import doobie._
 import doobie.implicits._
-import ru.itis.helpers.TimeConverter
 import tofu.logging.Logging
 
 import java.time.Instant
 
 trait TextService {
-  def findById(
-      id: TextId
+  def findByToken(
+      token: TextToken
   ): IOWithRequestContext[Either[errors.AppError, Option[Text]]]
-  def deleteById(
-      id: TextId
+  def deleteByToken(
+      token: TextToken
   ): IOWithRequestContext[Either[errors.AppError, Unit]]
   def create(
       text: PasteText
@@ -35,19 +35,19 @@ object TextService {
       transactor: Transactor[IOWithRequestContext]
   ) extends TextService {
 
-    override def findById(
-        id: TextId
+    override def findByToken(
+        token: TextToken
     ): IOWithRequestContext[Either[errors.AppError, Option[Text]]] =
       dao
-        .findById(id)
+        .findByToken(token)
         .transact(transactor)
         .attempt
         .map(_.leftMap(errors.InternalError))
 
-    override def deleteById(
-        id: TextId
+    override def deleteByToken(
+        token: TextToken
     ): IOWithRequestContext[Either[AppError, Unit]] =
-      dao.deleteById(id).transact(transactor).attempt.map {
+      dao.deleteByToken(token).transact(transactor).attempt.map {
         case Left(th)           => InternalError(th).asLeft[Unit]
         case Right(Left(error)) => error.asLeft[Unit]
         case _                  => ().asRight[AppError]
@@ -79,22 +79,22 @@ object TextService {
       logging: Logging[IOWithRequestContext]
   ) extends TextService {
 
-    override def findById(
-        id: TextId
+    override def findByToken(
+        token: TextToken
     ): IOWithRequestContext[Either[AppError, Option[Text]]] =
       for {
         _ <- logging.info("")
-        res <- service.findById(id)
+        res <- service.findByToken(token)
         _ <- res match {
           case Left(error)  => logging.error(s"")
           case Right(value) => logging.info("")
         }
       } yield res
 
-    override def deleteById(
-        id: TextId
+    override def deleteByToken(
+        token: TextToken
     ): IOWithRequestContext[Either[AppError, Unit]] =
-      service.deleteById(id)
+      service.deleteByToken(token)
 
     override def create(
         text: PasteText

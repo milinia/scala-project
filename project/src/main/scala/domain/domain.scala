@@ -22,18 +22,18 @@ object domain {
   // в артибутах класса, а через оборачивание точно не перепутать)
   @derive(loggable, encoder, decoder)
   @newtype
-  case class TextId(value: Long)
-  object TextId {
-    implicit val doobieRead: Read[TextId] =
-      Read[Long].map(
-        TextId(_)
+  case class TextToken(value: String)
+  object TextToken {
+    implicit val doobieRead: Read[TextToken] =
+      Read[String].map(
+        TextToken(_)
       ) //нужно чтобы doobie понимал как преобразовывать значения
-    implicit val schema: Schema[TextId] =
-      Schema.schemaForLong.map(l => Some(TextId(l)))(
+    implicit val schema: Schema[TextToken] =
+      Schema.schemaForString.map(s => Some(TextToken(s)))(
         _.value
-      ) //маппинг из лонга в TextId
-    implicit val codec: Codec[String, TextId, TextPlain] =
-      Codec.long.map(TextId(_))(_.value)
+      ) //маппинг из лонга в TextToken
+    implicit val codec: Codec[String, TextToken, TextPlain] =
+      Codec.string.map(TextToken(_))(_.value)
   }
   @derive(loggable, encoder, decoder)
   @newtype

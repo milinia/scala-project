@@ -2,7 +2,7 @@ package ru.itis
 package controller
 
 import domain.{PasteText, RequestContext, Text}
-import domain.domain.TextId
+import domain.domain.TextToken
 import domain.errors.AppError
 
 import cats.effect.IO
@@ -17,18 +17,20 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 object endpoints {
   //input error_output output параметр_окружения
   val findTextById
-      : PublicEndpoint[(TextId, RequestContext), AppError, Option[Text], Any] =
+      : PublicEndpoint[(TextToken, RequestContext), AppError, Option[
+        Text
+      ], Any] =
     endpoint.get
-      .in("text" / path[TextId])
+      .in("text" / path[TextToken])
       //хотим уметь видеть одного пользователя(индификатор одного запроса)
       .in(header[RequestContext]("X-Request-Id"))
       .errorOut(jsonBody[AppError])
       .out(jsonBody[Option[Text]])
 
   val removeText
-      : PublicEndpoint[(TextId, RequestContext), AppError, Unit, Any] =
+      : PublicEndpoint[(TextToken, RequestContext), AppError, Unit, Any] =
     endpoint.delete
-      .in("text" / path[TextId])
+      .in("text" / path[TextToken])
       .in(header[RequestContext]("X-Request-Id"))
       .errorOut(jsonBody[AppError])
 

@@ -21,14 +21,14 @@ object TextController {
       extends TextController {
 
     override val findTextById: ServerEndpoint[Any, IO] =
-      endpoints.findTextById.serverLogic { case (id, ctx) =>
-        service.findById(id).map(_.leftMap[AppError](identity)).run(ctx)
+      endpoints.findTextById.serverLogic { case (token, ctx) =>
+        service.findByToken(token).map(_.leftMap[AppError](identity)).run(ctx)
       }
 
     override val removeTextById: ServerEndpoint[Any, IO] =
-      endpoints.removeText.serverLogic { case (id, ctx) =>
+      endpoints.removeText.serverLogic { case (token, ctx) =>
         service
-          .deleteById(id)
+          .deleteByToken(token)
           //reader monad в конце использования предоставляешь какое-то значение чтобы запустить
           .run(ctx)
       }

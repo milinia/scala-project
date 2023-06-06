@@ -1,7 +1,7 @@
 package ru.itis
 package domain
 
-import domain.TextId
+import domain.TextToken
 import cats.implicits.catsSyntaxOptionId
 import io.circe.Decoder.Result
 import io.circe.{Decoder, Encoder, HCursor, Json}
@@ -28,8 +28,8 @@ object errors {
     implicit val schema: Schema[AppError] = Schema.string[AppError]
   }
 
-  case class TextNotFound(id: TextId)
-      extends AppError(s"Text with ${id.value} id not found")
+  case class TextNotFound(token: TextToken)
+      extends AppError(s"Text with ${token.value} id not found")
 
   case class InternalError(cause0: Throwable)
       extends AppError("Internal error", cause0.some)

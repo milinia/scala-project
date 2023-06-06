@@ -1,9 +1,9 @@
 create database text;
 
 create table TEXT(
-    token serial not null,
+    token UUID PRIMARY KEY,
     PRIMARY KEY(token),
-    text character varying NOT NULL,
+    text text NOT NULL,
     created_at bigint NOT NULL,
     expiration_time bigint NOT NULL
 );

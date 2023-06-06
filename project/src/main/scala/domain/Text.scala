@@ -1,7 +1,7 @@
 package ru.itis
 package domain
 
-import domain.{TextContent, TextDate, TextId}
+import domain.{TextContent, TextDate, TextToken}
 
 import derevo.circe.{decoder, encoder}
 import derevo.derive
@@ -11,7 +11,7 @@ import tofu.logging.derivation._
 @derive(loggable, encoder, decoder)
 //на уровне рантайма здесь будет просто Long, String, Date
 final case class Text(
-    id: TextId,
+    token: TextToken,
     content: TextContent,
     createdAt: TextDate,
     expirationTime: TextDate

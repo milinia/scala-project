@@ -1,20 +1,19 @@
 package ru.itis
 package dao
 
-import domain.domain.{TextDate, TextId}
+import domain.domain.{TextDate, TextToken}
 import domain.errors.TextNotFound
 import domain.{PasteText, Text, errors}
-import helpers.TimeConverter
 
 import cats.syntax.either._
 import doobie._
 import doobie.implicits._
 
-import java.time.Instant
+import java.util.UUID
 
 trait TextDao {
-  def findById(id: TextId): ConnectionIO[Option[Text]]
-  def deleteById(id: TextId): ConnectionIO[Either[TextNotFound, Unit]]
+  def findByToken(token: TextToken): ConnectionIO[Option[Text]]
+  def deleteByToken(token: TextToken): ConnectionIO[Either[TextNotFound, Unit]]
   def createText(
       text: PasteText,
       createdAt: TextDate,
@@ -24,31 +23,34 @@ trait TextDao {
 
 object TextDao {
   object sql {
-    def findByIdSql(id: TextId): Query0[Text] = {
-      sql"select * from TEXT where token=${id.value}"
+    def findByTokenSql(token: TextToken): Query0[Text] = {
+      sql"select * from TEXT where token=${token.value}"
         .query[Text] //query прочитывает ответный тип данных
     }
-    def deleteByIdSql(id: TextId): Update0 = {
+    def deleteByTokenSql(id: TextToken): Update0 = {
       sql"delete from TEXT where token=${id.value}".update //update возвращает количество измененных строчек
     }
     def insertSql(
+        token: String,
         text: PasteText,
         createdAt: TextDate,
         expirationTime: TextDate
     ): Update0 = {
-      sql"insert into TEXT (text, created_at, expiration_time) values (${text.content.content}, ${createdAt.date
+      sql"insert into TEXT (token, text, created_at, expiration_time) values ($token, ${text.content.content}, ${createdAt.date
         .toEpochMilli()}, ${expirationTime.date.toEpochMilli()})".update
     }
   }
   private final class TextDaoImpl extends TextDao {
-    override def findById(id: TextId): doobie.ConnectionIO[Option[Text]] =
-      sql.findByIdSql(id).option
+    override def findByToken(
+        token: TextToken
+    ): doobie.ConnectionIO[Option[Text]] =
+      sql.findByTokenSql(token).option
 
-    override def deleteById(
-        id: TextId
+    override def deleteByToken(
+        token: TextToken
     ): doobie.ConnectionIO[Either[TextNotFound, Unit]] =
-      sql.deleteByIdSql(id).run.map {
-        case 0 => TextNotFound(id).asLeft[Unit]
+      sql.deleteByTokenSql(token).run.map {
+        case 0 => TextNotFound(token).asLeft[Unit]
         case _ => ().asRight[TextNotFound]
       }
 
@@ -59,11 +61,12 @@ object TextDao {
     ): doobie.ConnectionIO[Either[errors.InternalError, Text]] =
       sql
         .insertSql(
+          UUID.randomUUID().toString,
           text,
           createdAt,
           expirationTime
         )
-        .withUniqueGeneratedKeys[TextId]("id")
+        .withUniqueGeneratedKeys[TextToken]("id")
         .map(id => Text(id, text.content, createdAt, expirationTime))
         .attemptSomeSqlState { case _ =>
           errors.InternalError(new Throwable("Failed to create text"))
