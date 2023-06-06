@@ -1,5 +1,4 @@
-package ru.itis
-package domain
+package domainPackage
 
 import cats.data.ReaderT
 import cats.effect.IO

@@ -1,11 +1,3 @@
-package ru.itis
-
-import config.AppConfig
-import controller.{TextController, endpoints}
-import dao.TextDao
-import domain.domain.IOWithRequestContext
-import service.TextService
-
 import cats.data.ReaderT
 import cats.effect.kernel.Resource
 import cats.effect.{ExitCode, IO, IOApp}
@@ -15,6 +7,12 @@ import doobie.util.transactor.Transactor
 import org.http4s.ember.server._
 import org.http4s.implicits._
 import org.http4s.server.Router
+import config.AppConfig
+import controller.{TextController, endpoints}
+import dao.TextDao
+import domainPackage.{RequestContext, domain}
+import domain.IOWithRequestContext
+import service.TextService
 import sttp.tapir.server.http4s.Http4sServerInterpreter
 import tofu.logging.Logging
 
@@ -36,7 +34,7 @@ object Main extends IOApp {
           config.db.user,
           config.db.password
         )
-        .mapK[IOWithRequestContext](ReaderT.liftK[IO, domain.RequestContext])
+        .mapK[IOWithRequestContext](ReaderT.liftK[IO, RequestContext])
       dao = TextDao.make
       service = TextService.make(dao, transactor)
       controller = TextController.make(service)

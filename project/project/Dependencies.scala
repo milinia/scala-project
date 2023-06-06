@@ -24,7 +24,7 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.4.0"
   lazy val tapirJsonCircle =
     "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % "1.4.0"
-  lazy val derevo = "tf.tofu" %% "derevo-circe" % "0.13.0"
+  lazy val derevoCircle = "tf.tofu" %% "derevo-circe" % "0.13.0" //
   lazy val pureConfig = "com.github.pureconfig" %% "pureconfig" % "0.17.4"
   lazy val http4sServer = "org.http4s" %% "http4s-ember-server" % "0.23.19"
   lazy val swagger =

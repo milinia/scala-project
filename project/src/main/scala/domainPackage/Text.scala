@@ -1,5 +1,4 @@
-package ru.itis
-package domain
+package domainPackage
 
 import domain.{TextContent, TextDate, TextToken}
 

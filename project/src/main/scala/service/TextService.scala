@@ -1,10 +1,9 @@
-package ru.itis
 package service
 
 import dao.TextDao
-import domain.domain.{IOWithRequestContext, TextDate, TextToken}
-import domain.errors.{AppError, InternalError}
-import domain.{PasteText, RequestContext, Text, errors}
+import domainPackage.domain.{IOWithRequestContext, TextDate, TextToken}
+import domainPackage.errors.{AppError, InternalError}
+import domainPackage.{PasteText, RequestContext, Text, errors}
 import helpers.TimeConverter
 
 import cats.implicits.catsSyntaxApplicativeError

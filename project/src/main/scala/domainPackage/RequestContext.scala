@@ -1,5 +1,4 @@
-package ru.itis
-package domain
+package domainPackage
 
 import derevo.derive
 import sttp.tapir.Codec

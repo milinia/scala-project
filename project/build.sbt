@@ -7,7 +7,6 @@ ThisBuild / scalaVersion := "2.13.10"
 lazy val root = (project in file("."))
   .settings(
     name := "project",
-    idePackagePrefix := Some("ru.itis"),
     libraryDependencies ++= Seq(
       scalaTest % Test,
       cats,
@@ -27,7 +26,7 @@ lazy val root = (project in file("."))
       tapirHttpServer,
       tapirJsonCircle,
       newType,
-      derevo,
+      derevoCircle,
       pureConfig,
       http4sServer,
       swagger

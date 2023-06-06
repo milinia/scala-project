@@ -1,9 +1,8 @@
-package ru.itis
 package controller
 
-import domain.{PasteText, RequestContext, Text}
-import domain.domain.TextToken
-import domain.errors.AppError
+import domainPackage.{PasteText, RequestContext, Text}
+import domainPackage.domain.TextToken
+import domainPackage.errors.AppError
 
 import cats.effect.IO
 import org.http4s.HttpRoutes
@@ -16,7 +15,7 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 //описание эндпоинтов
 object endpoints {
   //input error_output output параметр_окружения
-  val findTextById
+  val findTextByToken
       : PublicEndpoint[(TextToken, RequestContext), AppError, Option[
         Text
       ], Any] =
@@ -27,7 +26,7 @@ object endpoints {
       .errorOut(jsonBody[AppError])
       .out(jsonBody[Option[Text]])
 
-  val removeText
+  val removeTextByToken
       : PublicEndpoint[(TextToken, RequestContext), AppError, Unit, Any] =
     endpoint.delete
       .in("text" / path[TextToken])
@@ -46,8 +45,8 @@ object endpoints {
   def swaggerRoute(): HttpRoutes[IO] = {
     val endpoints =
       List(
-        findTextById,
-        removeText,
+        findTextByToken,
+        removeTextByToken,
         createText
       )
 

@@ -1,4 +1,3 @@
-package ru.itis
 package config
 
 import pureconfig.generic.semiauto._

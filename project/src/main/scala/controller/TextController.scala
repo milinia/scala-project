@@ -1,7 +1,6 @@
-package ru.itis
 package controller
 
-import domain.errors.AppError
+import domainPackage.errors.AppError
 import service.TextService
 
 import cats.effect.IO
@@ -9,8 +8,8 @@ import cats.syntax.either._
 import sttp.tapir.server.ServerEndpoint
 
 trait TextController {
-  def findTextById: ServerEndpoint[Any, IO]
-  def removeTextById: ServerEndpoint[Any, IO] //id придет из эндпоинта
+  def findTextByToken: ServerEndpoint[Any, IO]
+  def removeTextByToken: ServerEndpoint[Any, IO] //id придет из эндпоинта
   def createText: ServerEndpoint[Any, IO]
 
   def allEndpoints: List[ServerEndpoint[Any, IO]]
@@ -20,13 +19,13 @@ object TextController {
   final private class TextControllerImpl(service: TextService)
       extends TextController {
 
-    override val findTextById: ServerEndpoint[Any, IO] =
-      endpoints.findTextById.serverLogic { case (token, ctx) =>
+    override val findTextByToken: ServerEndpoint[Any, IO] =
+      endpoints.findTextByToken.serverLogic { case (token, ctx) =>
         service.findByToken(token).map(_.leftMap[AppError](identity)).run(ctx)
       }
 
-    override val removeTextById: ServerEndpoint[Any, IO] =
-      endpoints.removeText.serverLogic { case (token, ctx) =>
+    override val removeTextByToken: ServerEndpoint[Any, IO] =
+      endpoints.removeTextByToken.serverLogic { case (token, ctx) =>
         service
           .deleteByToken(token)
           //reader monad в конце использования предоставляешь какое-то значение чтобы запустить
@@ -39,7 +38,7 @@ object TextController {
       }
 
     override val allEndpoints: List[ServerEndpoint[Any, IO]] =
-      List(findTextById, removeTextById, createText)
+      List(findTextByToken, removeTextByToken, createText)
   }
 
   def make(service: TextService): TextController = new TextControllerImpl(

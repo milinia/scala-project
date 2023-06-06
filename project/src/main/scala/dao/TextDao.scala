@@ -1,9 +1,8 @@
-package ru.itis
 package dao
 
-import domain.domain.{TextDate, TextToken}
-import domain.errors.TextNotFound
-import domain.{PasteText, Text, errors}
+import domainPackage.domain.{TextDate, TextToken}
+import domainPackage.errors.TextNotFound
+import domainPackage.{PasteText, Text, errors}
 
 import cats.syntax.either._
 import doobie._
